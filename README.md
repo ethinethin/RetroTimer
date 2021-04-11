@@ -2,6 +2,8 @@
 
 A basic timer with retro aesthetic for casual streaming, written in C with SDL2. Not recommended for speedrunning.
 
+![Screenshot](RetroTimerSS.png)
+
 # Controls
 
 Buttons:

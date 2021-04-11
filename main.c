@@ -49,7 +49,7 @@ int
 main(int argc, char *argv[])
 {
 	SDL_Event event;
-	struct screen cur_screen = { 660, 160, "timer", NULL, NULL, SDL_FALSE, SDL_FALSE, NULL, {0, 0}, {0, 0}, {0, 0}, 0, 0, 0 };
+	struct screen cur_screen = { 660, 160, "RetroTimer", NULL, NULL, SDL_FALSE, SDL_FALSE, NULL, {0, 0}, {0, 0}, {0, 0}, 0, 0, 0 };
 	/* Initialize display */
 	display_init(&cur_screen);
 	/* If 3 command line arguments are provided, convert them to numbers for the starting time */
