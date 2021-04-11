@@ -11,9 +11,9 @@ struct screen {
 	SDL_bool running;
 	SDL_bool timer;
 	SDL_Texture *scanlines;
-	int H[2];
-	int M[2];
-	int S[2];
+	int H[3];
+	int M[3];
+	int S[3];
 	int cur_ticks;
 	int last_tick;
 	int first_tick;
@@ -49,7 +49,7 @@ int
 main(int argc, char *argv[])
 {
 	SDL_Event event;
-	struct screen cur_screen = { 660, 160, "RetroTimer", NULL, NULL, SDL_FALSE, SDL_FALSE, NULL, {0, 0}, {0, 0}, {0, 0}, 0, 0, 0 };
+	struct screen cur_screen = { 660, 160, "RetroTimer", NULL, NULL, SDL_FALSE, SDL_FALSE, NULL, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, 0, 0, 0 };
 	/* Initialize display */
 	display_init(&cur_screen);
 	/* If 3 command line arguments are provided, convert them to numbers for the starting time */
@@ -58,20 +58,22 @@ main(int argc, char *argv[])
 		cur_screen.M[0] = cur_screen.M[1] = atoi(argv[2]);
 		cur_screen.S[0] = cur_screen.S[1] = atoi(argv[3]);
 	}
+	/* Draw the initial time */
+	draw_screen(&cur_screen);
 	
 	/* Enter main input loop */
 	while (cur_screen.running == SDL_TRUE) {
-		/* Draw screen */
-		draw_screen(&cur_screen);
-		/* If timer is turned on, update ticks */
+		/* If timer is turned on, update ticks and draw time */
 		if (cur_screen.timer == SDL_TRUE) {
 			cur_screen.cur_ticks = SDL_GetTicks();
-			/* If 1000 or more ms have commenced since last tick, calculate time and set new last tick */
+			/* If 1000 or more ms have commenced since last tick, calculate time and set new last tick and draw screen */
 			if (cur_screen.cur_ticks - 1000 >= cur_screen.last_tick) {
 				cur_screen.last_tick = cur_screen.cur_ticks;
 				calc_time(&cur_screen);
 			}
+			draw_screen(&cur_screen);
 		}
+		SDL_Delay(1);
 		/* If necessary, check input and handle it */
 		if (SDL_PollEvent(&event) == 0) continue;
 		if (event.type == SDL_QUIT) {
@@ -109,6 +111,7 @@ main(int argc, char *argv[])
 				cur_screen.H[1] = cur_screen.H[0];
 				cur_screen.M[1] = cur_screen.M[0];
 				cur_screen.S[1] = cur_screen.S[0];
+				draw_screen(&cur_screen);
 			}
 		}
 	}
@@ -158,6 +161,13 @@ display_quit(struct screen *cur_screen)
 static void
 draw_screen(struct screen *cur_screen)
 {
+	/* If the same time is already displayed, don't update */
+	if (cur_screen->H[0] == cur_screen->H[2] &&
+	    cur_screen->M[0] == cur_screen->M[2] &&
+	    cur_screen->S[0] == cur_screen->S[2]) {
+		return;
+	}
+
 	/* Clear screen to grey if the timer is paused, magenta if the timer is on
 	 * zero seconds, or purple otherwise */
 	if (cur_screen->timer == SDL_FALSE) {
@@ -173,6 +183,11 @@ draw_screen(struct screen *cur_screen)
 	SDL_Rect rect = { 0, 0, cur_screen->w, cur_screen->h };
 	SDL_RenderCopy(cur_screen->renderer, cur_screen->scanlines, NULL, &rect);
 	SDL_RenderPresent(cur_screen->renderer);
+	
+	/* Update "last time" */
+	cur_screen->H[2] = cur_screen->H[0];
+	cur_screen->M[2] = cur_screen->M[0];
+	cur_screen->S[2] = cur_screen->S[0];
 }
 
 static void
@@ -249,8 +264,9 @@ calc_time(struct screen *cur_screen)
 static void
 toggle_timer(struct screen *cur_screen)
 {
-	/* If you're pausing, update the old time */
-	if (cur_screen->timer == SDL_TRUE) {
+	cur_screen->timer = !cur_screen->timer;
+	/* If you're pausing, update the old time and output */
+	if (cur_screen->timer == SDL_FALSE) {
 		cur_screen->H[1] = cur_screen->H[0];
 		cur_screen->M[1] = cur_screen->M[0];
 		cur_screen->S[1] = cur_screen->S[0];
@@ -259,5 +275,6 @@ toggle_timer(struct screen *cur_screen)
 		cur_screen->first_tick = SDL_GetTicks();
 		cur_screen->last_tick = cur_screen->first_tick;
 	}
-	cur_screen->timer = !cur_screen->timer;
+	cur_screen->H[2] = cur_screen->M[2] = cur_screen->S[2] = -1;
+	draw_screen(cur_screen);
 }
