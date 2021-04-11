@@ -2,9 +2,13 @@
 
 A basic timer with retro aesthetic for casual streaming, written in C with SDL2. Not recommended for speedrunning. 
 
-![Screenshot](RetroTimerSS.png)
+![Screenshot of RetroTimer running](RetroTimerSS.png)
+*Screenshot of RetroTimer running*
 
 It seems to keep good time with no long- or short-term drifting and not too CPU intensive, but I’ll probably continue to work on optimizing it and cleaning up the code.
+
+![Screenshot of RetroTimer paused](RetroTimerSS_paused.png)
+*Screenshot of RetroTimer paused*
 
 # Controls
 

@@ -15,7 +15,6 @@ struct screen {
 	int M[3];
 	int S[3];
 	int cur_ticks;
-	int last_tick;
 	int first_tick;
 };
 
@@ -49,7 +48,7 @@ int
 main(int argc, char *argv[])
 {
 	SDL_Event event;
-	struct screen cur_screen = { 660, 160, "RetroTimer", NULL, NULL, SDL_FALSE, SDL_FALSE, NULL, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, 0, 0, 0 };
+	struct screen cur_screen = { 660, 160, "RetroTimer", NULL, NULL, SDL_FALSE, SDL_FALSE, NULL, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, 0, 0 };
 	/* Initialize display */
 	display_init(&cur_screen);
 	/* If 3 command line arguments are provided, convert them to numbers for the starting time */
@@ -66,11 +65,7 @@ main(int argc, char *argv[])
 		/* If timer is turned on, update ticks and draw time */
 		if (cur_screen.timer == SDL_TRUE) {
 			cur_screen.cur_ticks = SDL_GetTicks();
-			/* If 1000 or more ms have commenced since last tick, calculate time and set new last tick and draw screen */
-			if (cur_screen.cur_ticks - 1000 >= cur_screen.last_tick) {
-				cur_screen.last_tick = cur_screen.cur_ticks;
-				calc_time(&cur_screen);
-			}
+			calc_time(&cur_screen);
 			draw_screen(&cur_screen);
 		}
 		SDL_Delay(1);
@@ -273,7 +268,6 @@ toggle_timer(struct screen *cur_screen)
 	} else {
 		/* Unpausing, get a new first tick */
 		cur_screen->first_tick = SDL_GetTicks();
-		cur_screen->last_tick = cur_screen->first_tick;
 	}
 	cur_screen->H[2] = cur_screen->M[2] = cur_screen->S[2] = -1;
 	draw_screen(cur_screen);
