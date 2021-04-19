@@ -37,7 +37,7 @@ A C compiler and SDL2 libraries (https://www.libsdl.org/download-2.0.php) are re
 MacOS app & streaming with OBS
 -
 
-If you compile at the command line and rename the executable RetroTimer.app, it will be launched without opening a terminal window. Feel free to move it into `/Applications` for access from Launchpad.
+If you compile at the command line and rename the executable RetroTimer.app, it will be launched without opening a terminal window. Feel free to move it into `/Applications` for access from Launchpad. There is also a pre-compiled universal binary which should run on any computer with MacOS Catalina or newer, available under Releases on the right. This binary contains the SDL2 framework, so it should run without installing SDL2.
 
 **If you plan on using this for streaming or recording with OBS, you will probably need to use cropped desktop capture, because window capture in OBS is very laggy!** This is not a bug with RetroTimer, but an issue with the window capture feature of OBS.
 
